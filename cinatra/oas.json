@@ -1,0 +1,235 @@
+{
+  "agentspec_version": "26.1.0",
+  "component_type": "Flow",
+  "id": "contact-discovery-agent-flow",
+  "name": "Contact Discovery Agent",
+  "description": "Stateless leaf agent that takes a CRM accountId (provider-native, e.g. Twenty Company id) and discovers contacts for that company. Apollo people-search primary path (apolloFirst=true and Apollo connected); web_search via LinkedIn fallback. Persists each contact via crm_contact_create against the provider-agnostic CRM facade. Server-side dedup is NOT provided by the create — operator-side cleanup or orchestrator-level dedup is out of scope for this leaf agent.",
+  "metadata": {
+    "cinatra": {
+      "type": "flow",
+      "packageName": "@cinatra-ai/contact-discovery-agent",
+      "packageVersion": "0.1.2",
+      "hitlScreens": [],
+      "llm": {
+        "preferredProvider": "openai",
+        "preferredModel": "gpt-5.5"
+      }
+    }
+  },
+  "inputs": [
+    { "title": "accountId", "type": "string" },
+    {
+      "title": "titlePatterns",
+      "type": "array",
+      "json_schema": { "items": { "type": "string" } },
+      "default": ["founder", "CEO", "CTO"]
+    },
+    { "title": "maxContacts", "type": "integer", "default": 3 },
+    { "title": "apolloFirst", "type": "boolean", "default": true },
+    { "title": "cinatra_run_id", "type": "string", "default": "" }
+  ],
+  "outputs": [
+    {
+      "title": "contactIds",
+      "type": "array",
+      "json_schema": { "items": { "type": "string" } }
+    },
+    { "title": "apolloHitCount", "type": "integer" },
+    { "title": "webFallbackUsed", "type": "boolean" },
+    {
+      "title": "failures",
+      "type": "array",
+      "json_schema": { "items": { "type": "object" } }
+    }
+  ],
+  "start_node": { "$component_ref": "start" },
+  "nodes": [
+    { "$component_ref": "start" },
+    { "$component_ref": "discover" },
+    { "$component_ref": "end" }
+  ],
+  "control_flow_connections": [
+    {
+      "component_type": "ControlFlowEdge",
+      "name": "start_to_discover",
+      "from_node": { "$component_ref": "start" },
+      "to_node": { "$component_ref": "discover" }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "name": "discover_to_end",
+      "from_node": { "$component_ref": "discover" },
+      "to_node": { "$component_ref": "end" }
+    }
+  ],
+  "data_flow_connections": [
+    {
+      "component_type": "DataFlowEdge",
+      "name": "start_accountId_to_discover_accountId",
+      "source_node": { "$component_ref": "start" },
+      "source_output": "accountId",
+      "destination_node": { "$component_ref": "discover" },
+      "destination_input": "accountId"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "start_titlePatterns_to_discover_titlePatterns",
+      "source_node": { "$component_ref": "start" },
+      "source_output": "titlePatterns",
+      "destination_node": { "$component_ref": "discover" },
+      "destination_input": "titlePatterns"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "start_maxContacts_to_discover_maxContacts",
+      "source_node": { "$component_ref": "start" },
+      "source_output": "maxContacts",
+      "destination_node": { "$component_ref": "discover" },
+      "destination_input": "maxContacts"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "start_apolloFirst_to_discover_apolloFirst",
+      "source_node": { "$component_ref": "start" },
+      "source_output": "apolloFirst",
+      "destination_node": { "$component_ref": "discover" },
+      "destination_input": "apolloFirst"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "discover_contactIds_to_end_contactIds",
+      "source_node": { "$component_ref": "discover" },
+      "source_output": "contactIds",
+      "destination_node": { "$component_ref": "end" },
+      "destination_input": "contactIds"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "discover_apolloHitCount_to_end_apolloHitCount",
+      "source_node": { "$component_ref": "discover" },
+      "source_output": "apolloHitCount",
+      "destination_node": { "$component_ref": "end" },
+      "destination_input": "apolloHitCount"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "discover_webFallbackUsed_to_end_webFallbackUsed",
+      "source_node": { "$component_ref": "discover" },
+      "source_output": "webFallbackUsed",
+      "destination_node": { "$component_ref": "end" },
+      "destination_input": "webFallbackUsed"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "discover_failures_to_end_failures",
+      "source_node": { "$component_ref": "discover" },
+      "source_output": "failures",
+      "destination_node": { "$component_ref": "end" },
+      "destination_input": "failures"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "start_cinatra_run_id_to_discover_agent_run_id",
+      "source_node": { "$component_ref": "start" },
+      "source_output": "cinatra_run_id",
+      "destination_node": { "$component_ref": "discover" },
+      "destination_input": "agent_run_id"
+    }
+  ],
+  "$referenced_components": {
+    "start": {
+      "component_type": "StartNode",
+      "id": "start",
+      "name": "Inputs",
+      "metadata": {
+        "cinatra": {
+          "required": ["accountId"],
+          "hidden": ["titlePatterns", "maxContacts", "apolloFirst", "cinatra_run_id"]
+        }
+      },
+      "inputs": [
+        { "title": "accountId", "type": "string" },
+        {
+          "title": "titlePatterns",
+          "type": "array",
+          "json_schema": { "items": { "type": "string" } },
+          "default": ["founder", "CEO", "CTO"]
+        },
+        { "title": "maxContacts", "type": "integer", "default": 3 },
+        { "title": "apolloFirst", "type": "boolean", "default": true },
+        { "title": "cinatra_run_id", "type": "string", "default": "" }
+      ]
+    },
+    "discover": {
+      "component_type": "ApiNode",
+      "id": "discover",
+      "name": "Discover contacts",
+      "url": "{{CINATRA_BASE_URL}}/api/llm-bridge",
+      "http_method": "POST",
+      "data": {
+        "agent_id": "contact-discovery-agent",
+        "system": "You are a stateless contact discovery agent. Follow the SKILL.md step-by-step. Return a single JSON object with {contactIds, apolloHitCount, webFallbackUsed, failures} — nothing else.",
+        "user": "Discover contacts for the account identified by accountId. Resolve the account via crm_account_get, then use Apollo people-search (when apolloFirst=true) or LinkedIn web_search as fallback. Persist each contact via crm_contact_create.\nInputs:\n- accountId: {{ accountId }}\n- titlePatterns: {{ titlePatterns }}\n- maxContacts: {{ maxContacts }}\n- apolloFirst: {{ apolloFirst }}",
+        "agent_run_id": "{{ agent_run_id }}",
+        "cinatra_llm": {
+          "preferredProvider": "openai",
+          "preferredModel": "gpt-5.5"
+        }
+      },
+      "inputs": [
+        { "title": "accountId", "type": "string" },
+        {
+          "title": "titlePatterns",
+          "type": "array",
+          "json_schema": { "items": { "type": "string" } }
+        },
+        { "title": "maxContacts", "type": "integer" },
+        { "title": "apolloFirst", "type": "boolean" },
+        { "title": "agent_run_id", "type": "string" }
+      ],
+      "outputs": [
+        {
+          "title": "contactIds",
+          "type": "array",
+          "json_schema": { "items": { "type": "string" } }
+        },
+        { "title": "apolloHitCount", "type": "integer" },
+        { "title": "webFallbackUsed", "type": "boolean" },
+        {
+          "title": "failures",
+          "type": "array",
+          "json_schema": { "items": { "type": "object" } }
+        }
+      ],
+      "metadata": {
+        "cinatra": {
+          "riskClass": "write_safe",
+          "requiresApproval": false,
+          "packageName": "@cinatra-ai/contact-discovery-agent",
+          "description": "Single ApiNode → /api/llm-bridge. Bridge auto-discovers SKILL.md from agents/cinatra/contact-discovery-agent/skills/contact-discovery-agent/SKILL.md (via agent_id). metadata.cinatra.toolboxes is INTENTIONALLY OMITTED so the default self-MCP injection runs — the LLM reaches crm_account_get, apollo_validate, apollo_administration_get, apollo_people_search, and crm_contact_create via the injected Cinatra self-MCP. OpenAI's native web_search is part of the gpt-5 provider capability set and is invoked from SKILL.md only in the fallback path."
+        }
+      }
+    },
+    "end": {
+      "component_type": "EndNode",
+      "id": "end",
+      "name": "End",
+      "outputs": [
+        {
+          "title": "contactIds",
+          "type": "array",
+          "json_schema": { "items": { "type": "string" } },
+          "default": []
+        },
+        { "title": "apolloHitCount", "type": "integer", "default": 0 },
+        { "title": "webFallbackUsed", "type": "boolean", "default": false },
+        {
+          "title": "failures",
+          "type": "array",
+          "json_schema": { "items": { "type": "object" } },
+          "default": []
+        }
+      ]
+    }
+  }
+}

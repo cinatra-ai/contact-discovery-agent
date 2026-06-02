@@ -1,0 +1,12 @@
+{
+  "name": "@cinatra-ai/contact-discovery-agent",
+  "version": "0.1.2",
+  "license": "Apache-2.0",
+  "description": "Stateless leaf agent that takes an accountId and discovers contacts for that company. Apollo people-search primary path (when apolloFirst=true and Apollo connected); web_search via LinkedIn fallback. Persists each contact via crm_contact_create through the crm_* facade (a plain create — no server-side dedup, so repeated runs may create duplicates; cleanup/dedup is outside this leaf agent). Requires an email / linkedinUrl / apolloPersonId identity key per result.",
+  "type": "module",
+  "cinatra": {
+    "apiVersion": "cinatra.ai/v1",
+    "kind": "agent",
+    "dependencies": []
+  }
+}
