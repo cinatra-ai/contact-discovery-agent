@@ -11,6 +11,27 @@
   "cinatra": {
     "apiVersion": "cinatra.ai/v1",
     "kind": "agent",
-    "dependencies": []
+    "dependencies": [
+      {
+        "packageName": "@cinatra-ai/apollo-connector",
+        "edgeType": "runtime",
+        "versionConstraint": {
+          "kind": "exact",
+          "version": "0.1.3"
+        },
+        "requirement": "optional",
+        "kind": "connector"
+      }
+    ],
+    "consumes": [
+      {
+        "primitive": "apollo_administration_get",
+        "requirement": "optional"
+      },
+      {
+        "primitive": "apollo_people_search",
+        "requirement": "optional"
+      }
+    ]
   }
 }
