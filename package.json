@@ -16,8 +16,8 @@
         "packageName": "@cinatra-ai/apollo-connector",
         "edgeType": "runtime",
         "versionConstraint": {
-          "kind": "exact",
-          "version": "0.1.3"
+          "kind": "semver-range",
+          "range": "^0.1.3"
         },
         "requirement": "optional",
         "kind": "connector"
