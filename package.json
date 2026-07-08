@@ -11,6 +11,7 @@
   "cinatra": {
     "apiVersion": "cinatra.ai/v1",
     "kind": "agent",
+    "displayName": "Contact Discovery Agent",
     "dependencies": [
       {
         "packageName": "@cinatra-ai/apollo-connector",
@@ -32,6 +33,15 @@
         "primitive": "apollo_people_search",
         "requirement": "optional"
       }
-    ]
+    ],
+    "packageType": "agent",
+    "manifestVersion": 1,
+    "sourceTemplateId": "contact-discovery-agent-flow",
+    "sourceVersionId": "c6f589fc-855b-4f48-ba95-f3ebdf187645",
+    "sourceVersionNumber": 1,
+    "riskLevel": "low",
+    "hasApprovalGates": false,
+    "toolAccess": [],
+    "ownerOrgId": null
   }
 }
