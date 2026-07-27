@@ -10,7 +10,7 @@ Find the right people at a company you already have in your CRM. Point the agent
 
 **Troubleshooting:** if Apollo returns zero results, verify the account has a domain name in your CRM — that domain drives the people-search query. Contacts without an email or LinkedIn URL are skipped and appear in `failures[]`. Re-running over the same account creates duplicates; dedup at the orchestrator level using `crm_contact_search`.
 
-**Development:** the flow is defined in `cinatra/oas.json` and the LLM instructions live in `skills/contact-discovery-agent/SKILL.md`. Run `node extension-kind-gate.mjs` at the repo root before publishing.
+**Development:** the flow and the LLM instructions both live in `cinatra/oas.json` (the `discover` node's `data.system`). Run `node extension-kind-gate.mjs` at the repo root before publishing.
 
 ## Works with
 
