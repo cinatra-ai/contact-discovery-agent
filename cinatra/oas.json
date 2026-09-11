@@ -38,7 +38,16 @@
     {
       "title": "failures",
       "type": "array",
-      "json_schema": { "items": { "type": "object" } }
+      "json_schema": {
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "error": { "type": "string" }
+          },
+          "required": ["name", "error"]
+        }
+      }
     }
   ],
   "start_node": { "$component_ref": "start" },
@@ -197,7 +206,16 @@
         {
           "title": "failures",
           "type": "array",
-          "json_schema": { "items": { "type": "object" } }
+          "json_schema": {
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "error": { "type": "string" }
+              },
+              "required": ["name", "error"]
+            }
+          }
         }
       ],
       "metadata": {
@@ -225,7 +243,16 @@
         {
           "title": "failures",
           "type": "array",
-          "json_schema": { "items": { "type": "object" } },
+          "json_schema": {
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "error": { "type": "string" }
+              },
+              "required": ["name", "error"]
+            }
+          },
           "default": []
         }
       ]
